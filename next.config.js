@@ -5,6 +5,9 @@ const nextConfig = {
     images: {
       unoptimized: true, // Required for static export
     },
+    env: {
+      NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://salary-predictor-production.up.railway.app'
+    }
   }
   
   module.exports = nextConfig
