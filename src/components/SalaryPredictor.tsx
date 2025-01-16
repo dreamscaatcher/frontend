@@ -6,8 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-// Hard-code the API URL to your Railway backend URL
 const API_URL = 'https://salary-predictor-production.up.railway.app';
+console.log('API URL configured as:', API_URL);
 
 interface PredictionResponse {
   salary_usd: number;
@@ -32,15 +32,16 @@ const SalaryPredictor = () => {
     
     const requestUrl = `${API_URL}/predict`;
     console.log('Making request to:', requestUrl);
-    console.log('With data:', formData);
+    console.log('Request data:', formData);
 
     try {
       const response = await fetch(requestUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
         },
+        credentials: 'omit', // Important for CORS
+        mode: 'cors', // Explicitly set CORS mode
         body: JSON.stringify(formData),
       });
       
@@ -49,17 +50,17 @@ const SalaryPredictor = () => {
       
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Error response body:', errorText);
+        console.error('Error response:', errorText);
         try {
           const errorJson = JSON.parse(errorText);
-          throw new Error(errorJson.detail || 'Server error');
+          throw new Error(errorJson.detail || 'Prediction request failed');
         } catch (e) {
-          throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+          throw new Error(`Server error: ${response.status} ${response.statusText}`);
         }
       }
       
       const data = await response.json();
-      console.log('Success response:', data);
+      console.log('Received data:', data);
       setPrediction(data);
     } catch (error) {
       console.error('Full error:', error);
