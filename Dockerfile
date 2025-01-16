@@ -1,29 +1,37 @@
-# Use Node.js LTS
-FROM node:18-alpine
+FROM node:18-alpine AS builder
 
 # Set working directory
 WORKDIR /app
 
-# Install dependencies first (better caching)
+# Copy package files
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install --legacy-peer-deps
 
-# Copy Next.js config
-COPY next.config.js ./
-COPY tsconfig.json ./
-COPY tailwind.config.ts ./
-COPY postcss.config.mjs ./
-
-# Copy source code
-COPY src ./src
-COPY public ./public
+# Copy all frontend files
+COPY . .
 
 # Build the Next.js app
+ENV NEXT_TELEMETRY_DISABLED 1
 RUN npm run build
 
-# Expose the port Next.js runs on
+# Production image, copy all the files and run next
+FROM node:18-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED 1
+
+# Copy built assets from builder
+COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+# Expose port
 EXPOSE 3000
 
-# Start the Next.js app in production mode
-ENV NODE_ENV=production
-CMD ["npm", "start"]
+# Start the application
+CMD ["node", "server.js"]
