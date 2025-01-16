@@ -4,14 +4,19 @@ FROM node:18-alpine
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json ./
-
-# Install dependencies
+# Install dependencies first (better caching)
+COPY package*.json ./
 RUN npm install --legacy-peer-deps
 
-# Copy the rest of the frontend code
-COPY . .
+# Copy Next.js config
+COPY next.config.js ./
+COPY tsconfig.json ./
+COPY tailwind.config.ts ./
+COPY postcss.config.mjs ./
+
+# Copy source code
+COPY src ./src
+COPY public ./public
 
 # Build the Next.js app
 RUN npm run build
@@ -20,4 +25,5 @@ RUN npm run build
 EXPOSE 3000
 
 # Start the Next.js app in production mode
+ENV NODE_ENV=production
 CMD ["npm", "start"]

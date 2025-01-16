@@ -9,7 +9,7 @@ const nextConfig = {
     ]
   },
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://salary-predictor-production.up.railway.app'
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://predictor-salary-production.up.railway.app'
   }
 }
 
