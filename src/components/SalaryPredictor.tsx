@@ -6,9 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-const API_URL = 'https://salary-predictor-production.up.railway.app';
-console.log('API URL configured as:', API_URL);
-
+const API_URL = window.location.origin;  // This will use the current domain
 interface PredictionResponse {
   salary_usd: number;
   confidence: number;
