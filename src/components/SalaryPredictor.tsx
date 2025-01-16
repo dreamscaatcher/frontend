@@ -38,8 +38,6 @@ const SalaryPredictor = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'omit', // Important for CORS
-        mode: 'cors', // Explicitly set CORS mode
         body: JSON.stringify(formData),
       });
       
