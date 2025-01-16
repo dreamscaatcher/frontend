@@ -6,7 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://salary-predictor-production-748e.up.railway.app';
+// Hard-code the API URL to your Railway backend URL
+const API_URL = 'https://salary-predictor-production.up.railway.app';
 
 interface PredictionResponse {
   salary_usd: number;
@@ -29,28 +30,39 @@ const SalaryPredictor = () => {
     setLoading(true);
     setError(null);
     
-    try {
-      console.log('Making request to:', `${API_URL}/predict`);
-      console.log('With data:', formData);
+    const requestUrl = `${API_URL}/predict`;
+    console.log('Making request to:', requestUrl);
+    console.log('With data:', formData);
 
-      const response = await fetch(`${API_URL}/predict`, {
+    try {
+      const response = await fetch(requestUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: JSON.stringify(formData),
       });
       
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Server responded with:', errorText);
-        throw new Error('Prediction request failed');
+        console.error('Error response body:', errorText);
+        try {
+          const errorJson = JSON.parse(errorText);
+          throw new Error(errorJson.detail || 'Server error');
+        } catch (e) {
+          throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+        }
       }
       
       const data = await response.json();
+      console.log('Success response:', data);
       setPrediction(data);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Full error:', error);
       setError(error instanceof Error ? error.message : 'Failed to get prediction');
     } finally {
       setLoading(false);
