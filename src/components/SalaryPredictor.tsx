@@ -6,8 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-// Environment variable for API URL
-const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://salary-predictor-production-748e.up.railway.app';
 
 interface PredictionResponse {
   salary_usd: number;
@@ -31,6 +30,9 @@ const SalaryPredictor = () => {
     setError(null);
     
     try {
+      console.log('Making request to:', `${API_URL}/predict`);
+      console.log('With data:', formData);
+
       const response = await fetch(`${API_URL}/predict`, {
         method: 'POST',
         headers: {
@@ -40,12 +42,15 @@ const SalaryPredictor = () => {
       });
       
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Server responded with:', errorText);
         throw new Error('Prediction request failed');
       }
       
       const data = await response.json();
       setPrediction(data);
     } catch (error) {
+      console.error('Error:', error);
       setError(error instanceof Error ? error.message : 'Failed to get prediction');
     } finally {
       setLoading(false);
