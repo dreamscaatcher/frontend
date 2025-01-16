@@ -24,11 +24,18 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Copy built assets from builder
-COPY --from=builder /app/next.config.js ./
+# Copy necessary files
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/package.json ./
+
+# Ensure correct permissions
+RUN chown -R node:node /app
+
+# Use non-root user
+USER node
 
 # Expose port
 EXPOSE 3000
