@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://salary-predictor-production.up.railway.app';// This will use the current domain
+const API_URL = '/api';  // Use the rewrite rule from next.config.js
 interface PredictionResponse {
   salary_usd: number;
   confidence: number;
@@ -36,10 +36,8 @@ const SalaryPredictor = () => {
       const response = await fetch(requestUrl, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Content-Type': 'application/json'
         },
-        mode: 'cors',
         body: JSON.stringify(formData),
       });
       

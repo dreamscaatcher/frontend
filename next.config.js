@@ -1,13 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    output: 'export',  // Enable static export
-    distDir: 'out',    // Specify output directory
-    images: {
-      unoptimized: true, // Required for static export
-    },
-    env: {
-      NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://salary-predictor-production.up.railway.app'
-    }
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`
+      }
+    ]
+  },
+  env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://salary-predictor-production.up.railway.app'
   }
-  
-  module.exports = nextConfig
+}
+
+module.exports = nextConfig
